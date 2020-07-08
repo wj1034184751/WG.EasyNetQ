@@ -65,9 +65,11 @@
     <Compile Include="DapperHelper\Repository.cs" />
     <Compile Include="EasyNetQs.cs" />
     <Compile Include="ErrorStrategy\AlwaysRequeueErrorStrategy.cs" />
+    <Compile Include="MqEnum\MqStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Uti\ConfigUtils.cs" />
+    <Compile Include="Uti\SnowflakeId.cs" />
     <Compile Include="Uti\UtiHelper.cs" />
   </ItemGroup>
   <ItemGroup>

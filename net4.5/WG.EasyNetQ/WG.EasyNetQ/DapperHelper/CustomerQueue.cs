@@ -17,4 +17,22 @@ namespace WG.EasyNetQ.DapperHelper
         public Nullable<System.DateTime> UpdateTime { get; set; }
         public Nullable<int> CetryCount { get; set; }
     }
+
+    public partial class QueueValue
+    {
+        public long Id { get; set; }
+
+        public string Content { get; set; }
+
+        public ExceptionMessage ExceptionMessage { get; set; }
+    }
+
+    public partial class ExceptionMessage
+    {
+        public string Source { get; set; }
+
+        public string Message { get; set; }
+
+        public string InnerMessage { get; set; }
+    }
 }

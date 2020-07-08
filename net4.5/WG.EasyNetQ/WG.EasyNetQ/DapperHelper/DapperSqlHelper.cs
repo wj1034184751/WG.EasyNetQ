@@ -60,7 +60,25 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public static int GetByVersion(string sql, CustomerQueue par)
+        public static dynamic Update<T>(T entity) where T : class
+        {
+            using (var connection = DbConnection)
+            {
+                var model = connection.Update<T>(entity);
+                return model;
+            }
+        }
+
+        public static CustomerQueue GetByVersion(string sql, CustomerQueue par)
+        {
+            using (var connection = DbConnection)
+            {
+                var result = connection.Query<CustomerQueue>(sql, par);
+                return result.FirstOrDefault();
+            }
+        }
+
+        public static int GetCountByVersion(string sql, CustomerQueue par)
         {
             using (var connection = DbConnection)
             {
@@ -75,6 +93,15 @@ namespace WG.EasyNetQ.DapperHelper
             {
                 var model = connection.Execute(sql, par);
                 return model;
+            }
+        }
+
+        public static List<CustomerQueue> GetList(string sql)
+        {
+            using (var connection = DbConnection)
+            {
+                var result = connection.Query<CustomerQueue>(sql);
+                return result.ToList<CustomerQueue>();
             }
         }
     }

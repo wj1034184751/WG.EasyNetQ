@@ -1,4 +1,5 @@
 ﻿using EasyNetQ;
+using EasyNetQ.Consumer;
 using EasyNetQ.SystemMessages;
 using EasyNetQ.Topology;
 using System;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WG.EasyNetQ.DapperHelper;
+using WG.EasyNetQ.ErrorStrategy;
+using WG.EasyNetQ.MqEnum;
 using WG.EasyNetQ.Uti;
 
 namespace WG.EasyNetQ
@@ -35,9 +38,12 @@ namespace WG.EasyNetQ
                         {
                             string connStr = ConfigUtils.GetValue<string>("RabbitMq");
                             _client = RabbitHutch.CreateBus(connStr);
+                            //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
                         }
                     }
                 }
+
+                HandleErrors();
                 return _client;
             }
         }
@@ -52,6 +58,7 @@ namespace WG.EasyNetQ
                     {
                         string connStr = ConfigUtils.GetValue<string>("RabbitMq");
                         _client = RabbitHutch.CreateBus(connStr);
+                        //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
                     }
                 }
             }
@@ -67,17 +74,20 @@ namespace WG.EasyNetQ
             //持久化插入数据库
             CustomerQueue model = new CustomerQueue();
             model.QueueName = queue;
-            model.QueueValue = message;
-            model.IsConsume = 0;
+            model.IsConsume = (int)MqStatus.Wait;
             model.UpdateTime = DateTime.Now;
-            model.Version = UnitHelper.GetVersion(queue, message);
-            Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
+            QueueValue value = new QueueValue();
+            value.Content = message;
+            value.Id = Uti.SnowflakeId.Default().NextId();
+            model.QueueValue = UnitHelper.Serialize(value);
+            model.Version = UnitHelper.GetVersion(queue, value.Content);
+
             lock (_obj)
             {
-                var result = repository.GetByVersion("select Count(Id) from  [CustomerQueue] where Version=@Version", new CustomerQueue { Version = model.Version });
+                var result= DapperSqlHelper.GetCountByVersion("select Count(Id) from  [CustomerQueue] where Version=@Version", new CustomerQueue { Version = model.Version });
                 if (result == 0)
                 {
-                    repository.Insert(model);
+                    DapperSqlHelper.Insert(model);
                     client.Send(queue, message);
                 }
             }
@@ -88,9 +98,10 @@ namespace WG.EasyNetQ
         /// </summary>
         /// <param name="queue">队列名</param>
         /// <param name="message">对象</param>
-        public static void SendMessage<T>(string queue, T message) where T : class
+        public static void SendMessage<T>(string queue, T message) where T : class, new()
         {
             SendMessage(queue, UnitHelper.Serialize(message));
+
             #region
             //CustomerQueue model = new CustomerQueue();
             //model.QueueName = queue;
@@ -120,14 +131,13 @@ namespace WG.EasyNetQ
         {
             client.Receive<string>(queue, onMessage =>
             {
+                act.Invoke(onMessage);
+
                 //持久化插入数据库
                 #region
                 var version = UnitHelper.GetVersion(queue, onMessage);
-                Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
-                repository.Execute("Update [CustomerQueue] set [IsConsume]=1 where Version=@Version", new CustomerQueue { Version = version });
+                DapperSqlHelper.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                 #endregion
-
-                act.Invoke(onMessage);
             });
         }
 
@@ -141,14 +151,13 @@ namespace WG.EasyNetQ
         {
             client.Receive<string>(queue, onMessage =>
             {
+                act.Invoke(UnitHelper.DeserializeObject<T>(onMessage));
+
                 //持久化插入数据库
                 #region
                 var version = UnitHelper.GetVersion(queue, onMessage);
-                Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
-                repository.Execute("Update [CustomerQueue] set [IsConsume]=1 where Version=@Version", new CustomerQueue { Version = version });
+                DapperSqlHelper.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                 #endregion
-
-                act.Invoke(UnitHelper.DeserializeObject<T>(onMessage));
             });
 
             #region
@@ -210,7 +219,7 @@ namespace WG.EasyNetQ
         /// <typeparam name="T"></typeparam>
         /// <param name="queue"></param>
         /// <param name="message"></param>
-        public static void SubscribeMessage<T>(string queue, T message) where T : class
+        public static void SubscribeMessage<T>(string queue,Action<T> act) where T : class
         {
             #region
             //CustomerQueue model = new CustomerQueue();
@@ -230,21 +239,53 @@ namespace WG.EasyNetQ
             //    }
             //}
             #endregion
-            _client.Subscribe<T>(queue, d =>
-            {
-                Console.WriteLine(d);
-            });
+            //_client.Subscribe<T>(queue, d =>
+            //{
+            //    Console.WriteLine(d);
+            //});
+
+            _client.Subscribe<T>(queue, act);
         }
 
         /// <summary>
         /// 异常
         /// </summary>
-        private static void HandleErrors()
+        public static void HandleErrors()
         {
             Action<IMessage<Error>, MessageReceivedInfo> handleErrorMessage = (msg, info) =>
             {
                 //todo:记录数据库
+                CustomerQueue model = new CustomerQueue();
+                model.QueueName = info.RoutingKey;
+                model.IsConsume = (int)MqStatus.Failed;
+                model.UpdateTime = DateTime.Now;
+                string val = msg.Body.Message;
+                model.Version = UnitHelper.GetVersion(info.RoutingKey, msg.Body.Message);
+                QueueValue value = new QueueValue();
+                value.Content = msg.Body.Message;
+                value.ExceptionMessage = new ExceptionMessage();
+                value.ExceptionMessage.Message = msg.Body.Exception;
+                value.ExceptionMessage.Source = info.Queue;
+                model.QueueValue = UnitHelper.Serialize(value);
+                Console.WriteLine("出错!");
+                var result = DapperSqlHelper.GetByVersion("select * from [CustomerQueue] WHERE [Version]=@Version", new CustomerQueue() { Version = model.Version });
+                if (result != null)
+                {
+                    model.CetryCount += 1;
+                    DapperSqlHelper.Execute(@"UPDATE [CustomerQueue]
+                                       SET[QueueName] =@QueueName
+                                          ,[Version] =@Version
+                                          ,[QueueValue] =@QueueValue
+                                          ,[IsConsume] =@IsConsume
+                                          ,[UpdateTime] =@UpdateTime 
+                                          ,[CetryCount] =@CetryCount WHERE Version=@Version", model);
+                }
+                else
+                {
+                    DapperSqlHelper.Insert(model);
+                }
             };
+
             IQueue queue = new Queue(ErrorQueue, false);
             _client.Advanced.Consume(queue, handleErrorMessage);
         }
@@ -254,8 +295,7 @@ namespace WG.EasyNetQ
         /// </summary>
         public static void RetrySend()
         {
-            Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
-            var list = repository.GetList("SELECT  top 10 * FROM  [CustomerQueue] WHERE IsConsume=2 ORDER BY UpdateTime");
+            var list = DapperSqlHelper.GetList("SELECT  top 10 * FROM  [CustomerQueue] WHERE IsConsume=2 ORDER BY UpdateTime");
             if (list.Any())
             {
                 foreach (var item in list)
@@ -272,10 +312,9 @@ namespace WG.EasyNetQ
         public static void RetrySendMessage(CustomerQueue sendModel)
         {
             //持久化插入数据库
-            Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
             lock (_obj)
             {
-                var result = repository.Execute("update  [CustomerQueue] set [CetryCount]=ISNULL([CetryCount],0)+1 where Version=@Version", new CustomerQueue { Version = sendModel.Version });
+                var result = DapperSqlHelper.Execute("update  [CustomerQueue] set [CetryCount]=ISNULL([CetryCount],0)+1 where Version=@Version", new CustomerQueue { Version = sendModel.Version });
                 if (result >= 1)
                 {
                     client.Send(sendModel.QueueName, sendModel.QueueValue);
@@ -288,8 +327,7 @@ namespace WG.EasyNetQ
         /// </summary>
         public static void DelQueue()
         {
-            Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
-            var result = repository.Execute("delete  from  [CustomerQueue] where UpdateTime<=@UpdateTime", new CustomerQueue { UpdateTime = DateTime.Now.AddDays(-7) });
+            var result = DapperSqlHelper.Execute("delete  from  [CustomerQueue] where UpdateTime<=@UpdateTime", new CustomerQueue { UpdateTime = DateTime.Now.AddDays(-7) });
         }
 
 

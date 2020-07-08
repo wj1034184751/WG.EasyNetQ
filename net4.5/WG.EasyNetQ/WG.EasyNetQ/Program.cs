@@ -19,12 +19,34 @@ namespace WG.EasyNetQ
 
             //EasyNetQs.ReceiveMessages<string>("customer.ponds.reserve");
             //EasyNetQs.HandleErrors();
-            EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", "");
-            Console.WriteLine("First>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            //EasyNetQs.HandleErrors();
+            //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", d =>
+            // {
+            //     Console.WriteLine("接收!");
+            //     Console.WriteLine(d);
+            //     throw new Exception("ddd");
+            // });
+
+
+
+            //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", "");
+            //Console.WriteLine("First>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            
             for (int i = 0; i < 10; i++)
             {
-                EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
+                //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
+                CustomerPonds model = new CustomerPonds();
+                model.CustomerId = i;
+                model.MarkUserId = i;
+                var json= Uti.UnitHelper.Serialize(model);
+                EasyNetQs.SendMessage("test.wj.test", json);
             }
+
+            EasyNetQs.ReceiveMessage("test.wj.test", d =>
+            {
+                Console.WriteLine(d);
+                throw new Exception("出错!");
+            });
             //Console.WriteLine("Rabbit >>>>>>>>>>>>>>>>>>>>>");
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id");
             //Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
