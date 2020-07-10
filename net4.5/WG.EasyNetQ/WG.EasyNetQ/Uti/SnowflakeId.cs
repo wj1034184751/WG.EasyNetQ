@@ -35,10 +35,10 @@ namespace WG.EasyNetQ.Uti
 
             // sanity check for workerId
             if (workerId > MaxWorkerId || workerId < 0)
-                throw new ArgumentException($"worker Id can't be greater than {MaxWorkerId} or less than 0");
+                throw new ArgumentException(string.Format("worker Id can't be greater than {0} or less than 0", MaxWorkerId));
 
             if (datacenterId > MaxDatacenterId || datacenterId < 0)
-                throw new ArgumentException($"datacenter Id can't be greater than {MaxDatacenterId} or less than 0");
+                throw new ArgumentException(string.Format("datacenter Id can't be greater than {0} or less than 0", MaxDatacenterId));
         }
 
         public long WorkerId { get; protected set; }
@@ -79,7 +79,7 @@ namespace WG.EasyNetQ.Uti
 
                 if (timestamp < _lastTimestamp)
                     throw new Exception(
-                        $"InvalidSystemClock: Clock moved backwards, Refusing to generate id for {_lastTimestamp - timestamp} milliseconds");
+                        string.Format("InvalidSystemClock: Clock moved backwards, Refusing to generate id for {0} milliseconds", _lastTimestamp - timestamp));
 
                 if (_lastTimestamp == timestamp)
                 {

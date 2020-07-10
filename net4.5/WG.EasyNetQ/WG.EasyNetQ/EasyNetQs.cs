@@ -31,7 +31,7 @@ namespace WG.EasyNetQ
             get
             {
                 if (_client == null)
-                {
+                 {
                     lock (_obj)
                     {
                         if (_client == null)
@@ -48,21 +48,21 @@ namespace WG.EasyNetQ
             }
         }
 
-        static EasyNetQs()
-        {
-            if (_client == null)
-            {
-                lock (_obj)
-                {
-                    if (_client == null)
-                    {
-                        string connStr = ConfigUtils.GetValue<string>("RabbitMq");
-                        _client = RabbitHutch.CreateBus(connStr);
-                        //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
-                    }
-                }
-            }
-        }
+        //static EasyNetQs()
+        //{
+        //    if (_client == null)
+        //    {
+        //        lock (_obj)
+        //        {
+        //            if (_client == null)
+        //            {
+        //                string connStr = ConfigUtils.GetValue<string>("RabbitMq");
+        //                _client = RabbitHutch.CreateBus(connStr);
+        //                //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 点对点发送
@@ -73,22 +73,21 @@ namespace WG.EasyNetQ
         {
             //持久化插入数据库
             CustomerQueue model = new CustomerQueue();
+            QueueValue content = new QueueValue();
             model.QueueName = queue;
             model.IsConsume = (int)MqStatus.Wait;
             model.UpdateTime = DateTime.Now;
-            QueueValue value = new QueueValue();
-            value.Content = message;
-            value.Id = Uti.SnowflakeId.Default().NextId();
-            model.QueueValue = UnitHelper.Serialize(value);
-            model.Version = UnitHelper.GetVersion(queue, value.Content);
-
+            content.Id = Uti.SnowflakeId.Default().NextId();
+            content.Content = message;
+            model.QueueValue = UnitHelper.Serialize(content);
+            model.Version = UnitHelper.GetVersion(queue, content.Id);
             lock (_obj)
             {
                 var result= DapperSqlHelper.GetCountByVersion("select Count(Id) from  [CustomerQueue] where Version=@Version", new CustomerQueue { Version = model.Version });
                 if (result == 0)
                 {
                     DapperSqlHelper.Insert(model);
-                    client.Send(queue, message);
+                    client.Send<CustomerQueue>(queue, model);
                 }
             }
         }
@@ -129,13 +128,15 @@ namespace WG.EasyNetQ
         /// <param name="act"></param>
         public static void ReceiveMessage(string queue, Action<string> act)
         {
-            client.Receive<string>(queue, onMessage =>
+            client.Receive<CustomerQueue>(queue, onMessage =>
             {
-                act.Invoke(onMessage);
+                var model = onMessage;
+                var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
+                act.Invoke(content.Content);
 
                 //持久化插入数据库
                 #region
-                var version = UnitHelper.GetVersion(queue, onMessage);
+                var version = UnitHelper.GetVersion(queue, content.Id);
                 DapperSqlHelper.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                 #endregion
             });
@@ -149,30 +150,18 @@ namespace WG.EasyNetQ
         /// <param name="act"></param>
         public static void ReceiveMessage<T>(string queue, Action<T> act) where T : class
         {
-            client.Receive<string>(queue, onMessage =>
+            client.Receive<CustomerQueue>(queue, onMessage =>
             {
-                act.Invoke(UnitHelper.DeserializeObject<T>(onMessage));
+                var model = onMessage;
+                var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueName);
+                act.Invoke(UnitHelper.DeserializeObject<T>(content.Content));
 
                 //持久化插入数据库
                 #region
-                var version = UnitHelper.GetVersion(queue, onMessage);
+                var version = UnitHelper.GetVersion(queue, content.Id);
                 DapperSqlHelper.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                 #endregion
             });
-
-            #region
-            //client.Receive<T>(queue, onMessage =>
-            //{
-            //    //持久化插入数据库
-            //    #region
-            //    var version = GetVersion(queue, Serialize(onMessage));
-            //    Repository<CustomerQueue> repository = new Repository<CustomerQueue>();
-            //    repository.Execute("Update [CustomerQueue] set [IsConsume]=1 where Version=@Version", new CustomerQueue { Version = version });
-            //    #endregion
-
-            //    act.Invoke(onMessage);
-            //});
-            #endregion
         }
 
         /// <summary>
@@ -244,7 +233,7 @@ namespace WG.EasyNetQ
             //    Console.WriteLine(d);
             //});
 
-            _client.Subscribe<T>(queue, act);
+            client.Subscribe<T>(queue, act);
         }
 
         /// <summary>
@@ -254,24 +243,24 @@ namespace WG.EasyNetQ
         {
             Action<IMessage<Error>, MessageReceivedInfo> handleErrorMessage = (msg, info) =>
             {
+                Console.WriteLine(msg.Body.Message);
+                var model = UnitHelper.DeserializeObject<CustomerQueue>(msg.Body.Message);
+                var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
+
                 //todo:记录数据库
-                CustomerQueue model = new CustomerQueue();
                 model.QueueName = info.RoutingKey;
                 model.IsConsume = (int)MqStatus.Failed;
                 model.UpdateTime = DateTime.Now;
-                string val = msg.Body.Message;
-                model.Version = UnitHelper.GetVersion(info.RoutingKey, msg.Body.Message);
-                QueueValue value = new QueueValue();
-                value.Content = msg.Body.Message;
-                value.ExceptionMessage = new ExceptionMessage();
-                value.ExceptionMessage.Message = msg.Body.Exception;
-                value.ExceptionMessage.Source = info.Queue;
-                model.QueueValue = UnitHelper.Serialize(value);
-                Console.WriteLine("出错!");
+                model.Version = UnitHelper.GetVersion(info.RoutingKey, content.Id);
+                content.Content = content.Content;
+                content.ExceptionMessage = new ExceptionMessage();
+                content.ExceptionMessage.Message = msg.Body.Exception;
+                content.ExceptionMessage.Source = info.Queue;
+                model.QueueValue = UnitHelper.Serialize(content);
                 var result = DapperSqlHelper.GetByVersion("select * from [CustomerQueue] WHERE [Version]=@Version", new CustomerQueue() { Version = model.Version });
                 if (result != null)
                 {
-                    model.CetryCount += 1;
+                    model.CetryCount = model.CetryCount.HasValue ? model.CetryCount + 1 : 1;
                     DapperSqlHelper.Execute(@"UPDATE [CustomerQueue]
                                        SET[QueueName] =@QueueName
                                           ,[Version] =@Version
@@ -287,7 +276,7 @@ namespace WG.EasyNetQ
             };
 
             IQueue queue = new Queue(ErrorQueue, false);
-            _client.Advanced.Consume(queue, handleErrorMessage);
+            client.Advanced.Consume(queue, handleErrorMessage);
         }
 
         /// <summary>
@@ -356,7 +345,7 @@ namespace WG.EasyNetQ
             if (client != null)
             {
                 client.Dispose();
-                _client = null;
+                client = null;
             }
         }
     }

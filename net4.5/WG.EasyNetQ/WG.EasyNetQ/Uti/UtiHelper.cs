@@ -19,6 +19,11 @@ namespace WG.EasyNetQ.Uti
             return MD5(string.Format("{0}{1}", name, json));
         }
 
+        public static string GetVersion(string name, long id)
+        {
+            return MD5(string.Format("{0}{1}", name, id));
+        }
+
         /// <summary>
         /// 生成MD5
         /// </summary>

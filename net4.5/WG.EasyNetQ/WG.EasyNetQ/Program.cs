@@ -31,14 +31,14 @@ namespace WG.EasyNetQ
 
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", "");
             //Console.WriteLine("First>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            
-            for (int i = 0; i < 10; i++)
+
+            for (int i = 0; i < 2; i++)
             {
                 //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
                 CustomerPonds model = new CustomerPonds();
                 model.CustomerId = i;
                 model.MarkUserId = i;
-                var json= Uti.UnitHelper.Serialize(model);
+                var json = Uti.UnitHelper.Serialize(model);
                 EasyNetQs.SendMessage("test.wj.test", json);
             }
 
