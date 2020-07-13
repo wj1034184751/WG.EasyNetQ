@@ -17,7 +17,6 @@ namespace WG.EasyNetQ
             //dic.Add("Password", "");
             //dic.Add("User ID", "");
 
-            //EasyNetQs.ReceiveMessages<string>("customer.ponds.reserve");
             //EasyNetQs.HandleErrors();
             //EasyNetQs.HandleErrors();
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", d =>

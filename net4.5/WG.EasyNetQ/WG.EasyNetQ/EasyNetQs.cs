@@ -267,7 +267,7 @@ namespace WG.EasyNetQ
                                           ,[QueueValue] =@QueueValue
                                           ,[IsConsume] =@IsConsume
                                           ,[UpdateTime] =@UpdateTime 
-                                          ,[CetryCount] =@CetryCount WHERE Version=@Version", model);
+                                          ,[CetryCount] =@CetryCount WHERE Version=@Version", new CustomerQueue() { Version = model.Version,QueueName=model.QueueName,QueueValue=model.QueueValue,IsConsume=model.IsConsume,UpdateTime=model.UpdateTime,CetryCount=model.CetryCount});
                 }
                 else
                 {
@@ -276,7 +276,7 @@ namespace WG.EasyNetQ
             };
 
             IQueue queue = new Queue(ErrorQueue, false);
-            client.Advanced.Consume(queue, handleErrorMessage);
+            _client.Advanced.Consume(queue, handleErrorMessage);
         }
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace WG.EasyNetQ
             if (client != null)
             {
                 client.Dispose();
-                client = null;
+                _client = null;
             }
         }
     }
