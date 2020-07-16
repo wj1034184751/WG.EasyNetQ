@@ -1,0 +1,4 @@
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQs.csprojAssemblyReference.cache
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQs.csproj.CoreCompileInputs.cache
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.exe
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.pdb

@@ -46,6 +46,18 @@ namespace WG.EasyNetQ
                 Console.WriteLine(d);
                 throw new Exception("出错!");
             });
+
+            for (int i = 0; i < 2; i++)
+            {
+                //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
+                CustomerPonds model = new CustomerPonds();
+                model.CustomerId = i+1;
+                model.MarkUserId = i+1;
+                var json = Uti.UnitHelper.Serialize(model);
+                EasyNetQs.SendMessage("test.wj.test", json);
+            }
+
+
             //Console.WriteLine("Rabbit >>>>>>>>>>>>>>>>>>>>>");
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id");
             //Repository<CustomerQueue> repository = new Repository<CustomerQueue>();

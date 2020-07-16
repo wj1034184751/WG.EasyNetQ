@@ -37,32 +37,21 @@ namespace WG.EasyNetQ
                         if (_client == null)
                         {
                             string connStr = ConfigUtils.GetValue<string>("RabbitMq");
-                            _client = RabbitHutch.CreateBus(connStr);
-                            //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
+                            //_client = RabbitHutch.CreateBus(connStr);
+                            //注册错误重发
+                            _client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
                         }
                     }
                 }
-
-                HandleErrors();
+               
                 return _client;
             }
         }
 
-        //static EasyNetQs()
-        //{
-        //    if (_client == null)
-        //    {
-        //        lock (_obj)
-        //        {
-        //            if (_client == null)
-        //            {
-        //                string connStr = ConfigUtils.GetValue<string>("RabbitMq");
-        //                _client = RabbitHutch.CreateBus(connStr);
-        //                //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
-        //            }
-        //        }
-        //    }
-        //}
+        static EasyNetQs()
+        {
+            HandleErrors();
+        }
 
         /// <summary>
         /// 点对点发送
@@ -243,10 +232,8 @@ namespace WG.EasyNetQ
         {
             Action<IMessage<Error>, MessageReceivedInfo> handleErrorMessage = (msg, info) =>
             {
-                Console.WriteLine(msg.Body.Message);
                 var model = UnitHelper.DeserializeObject<CustomerQueue>(msg.Body.Message);
                 var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
-
                 //todo:记录数据库
                 model.QueueName = info.RoutingKey;
                 model.IsConsume = (int)MqStatus.Failed;
@@ -261,6 +248,7 @@ namespace WG.EasyNetQ
                 if (result != null)
                 {
                     model.CetryCount = model.CetryCount.HasValue ? model.CetryCount + 1 : 1;
+                    //model.CetryCount = 11;
                     DapperSqlHelper.Execute(@"UPDATE [CustomerQueue]
                                        SET[QueueName] =@QueueName
                                           ,[Version] =@Version
@@ -276,7 +264,7 @@ namespace WG.EasyNetQ
             };
 
             IQueue queue = new Queue(ErrorQueue, false);
-            _client.Advanced.Consume(queue, handleErrorMessage);
+            client.Advanced.Consume(queue, handleErrorMessage);
         }
 
         /// <summary>
@@ -329,7 +317,7 @@ namespace WG.EasyNetQ
             DelQueue();
 
             //重发失败消息
-            Thread th = new Thread(() =>
+            Task task = new Task(() =>
             {
                 while (true)
                 {
@@ -337,7 +325,8 @@ namespace WG.EasyNetQ
                     Thread.Sleep(1000);
                 }
             });
-            th.Start();
+
+            task.Start();
         }
 
         public static void Dispose()
