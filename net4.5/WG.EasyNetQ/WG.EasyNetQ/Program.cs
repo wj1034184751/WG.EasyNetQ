@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WG.EasyNetQ
@@ -41,22 +42,54 @@ namespace WG.EasyNetQ
                 EasyNetQs.SendMessage("test.wj.test", json);
             }
 
-            EasyNetQs.ReceiveMessage("test.wj.test", d =>
-            {
-                Console.WriteLine(d);
-                throw new Exception("出错!");
-            });
+            //EasyNetQs.ReceiveMessage("test.wj.test", d =>
+            //{
+            //    Console.WriteLine(d);
+            //    throw new Exception("出错!");
+            //});
+
+            //EasyNetQs.SubscribeMessage("test.wj.sub", d =>
+            //{
+            //    Console.WriteLine(d);
+            //    throw new Exception("出错!");
+            //});
+
+            //EasyNetQs.SubscribeMessage("test.wj.sub1", d =>
+            //{
+            //    //throw new Exception();
+            //    Console.WriteLine(d);
+            //    //throw new Exception("出错!");
+            //});
 
             for (int i = 0; i < 2; i++)
             {
-                //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
                 CustomerPonds model = new CustomerPonds();
-                model.CustomerId = i+1;
-                model.MarkUserId = i+1;
+                model.CustomerId = i;
+                model.MarkUserId = i;
+                model.MarkTime = DateTime.Now;
                 var json = Uti.UnitHelper.Serialize(model);
-                EasyNetQs.SendMessage("test.wj.test", json);
+                EasyNetQs.PublishMessage("test.wj.sub", json);
             }
 
+            //Thread.Sleep(5000);
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    CustomerPonds model = new CustomerPonds();
+            //    model.CustomerId = i;
+            //    model.MarkUserId = i;
+            //    var json = Uti.UnitHelper.Serialize(model);
+            //    EasyNetQs.PublishMessage("test.wj.sub", json);
+            //}
+
+            //Thread.Sleep(10000);
+            //  for (int i = 0; i < 2; i++)
+            //{
+            //    CustomerPonds model = new CustomerPonds();
+            //    model.CustomerId = i;
+            //    model.MarkUserId = i;
+            //    var json = Uti.UnitHelper.Serialize(model);
+            //    EasyNetQs.PublishMessage("test.wj.sub", json);
+            //}
 
             //Console.WriteLine("Rabbit >>>>>>>>>>>>>>>>>>>>>");
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id");

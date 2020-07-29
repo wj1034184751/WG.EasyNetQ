@@ -13,22 +13,23 @@ namespace WG.EasyNetQ.DapperHelper
 {
     public class DapperSqlHelper
     {
+        private static object _obj = new object();
         private static IDbConnection _dbConnection;
         protected string _connectionString = string.Empty;
         public static IDbConnection DbConnection
         {
             get
             {
-                if (_dbConnection == null)
-                {
-                    _dbConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconn"].ToString());
-                    _dbConnection.Open();
-                }
+                _dbConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["Dbconn"].ToString());
+                //if (_dbConnection == null)
+                //{
 
-                if (string.IsNullOrWhiteSpace(_dbConnection.ConnectionString))
-                {
-                    _dbConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Dbconn"].ToString();
-                }
+                //}
+
+                //if (_dbConnection.State == ConnectionState.Closed && string.IsNullOrWhiteSpace(_dbConnection.ConnectionString))
+                //{
+                //    _dbConnection.ConnectionString = ConfigurationManager.ConnectionStrings["Dbconn"].ToString();
+                //}
                 return _dbConnection;
             }
         }
@@ -69,20 +70,20 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public static CustomerQueue GetByVersion(string sql, CustomerQueue par)
+        public static CustomerQueue GetByVersion(CustomerQueue par)
         {
             using (var connection = DbConnection)
             {
-                var result = connection.Query<CustomerQueue>(sql, par);
+                var result = connection.Query<CustomerQueue>("select * from [CustomerQueue] WHERE [Version]=@Version", par);
                 return result.FirstOrDefault();
             }
         }
 
-        public static int GetCountByVersion(string sql, CustomerQueue par)
+        public static int GetCountByVersion( CustomerQueue par)
         {
             using (var connection = DbConnection)
             {
-                var result = connection.Query<int>(sql, par);
+                var result = connection.Query<int>("select Count(Id) from  [CustomerQueue] where Version=@Version", par);
                 return result.FirstOrDefault();
             }
         }
@@ -102,6 +103,28 @@ namespace WG.EasyNetQ.DapperHelper
             {
                 var result = connection.Query<CustomerQueue>(sql);
                 return result.ToList<CustomerQueue>();
+            }
+        }
+
+        public static void UpdateState(CustomerQueue model)
+        {
+            using (var connection = DbConnection)
+            {
+                connection.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", model);
+            }
+        }
+
+        public static void Update(CustomerQueue model)
+        {
+            using (var connection = DbConnection)
+            {
+                connection.Execute(@"UPDATE [CustomerQueue]
+                                       SET[QueueName] =@QueueName
+                                          ,[Version] =@Version
+                                          ,[QueueValue] =@QueueValue
+                                          ,[IsConsume] =@IsConsume
+                                          ,[UpdateTime] =@UpdateTime 
+                                          ,[CetryCount] =@CetryCount WHERE Version=@Version", model);
             }
         }
     }

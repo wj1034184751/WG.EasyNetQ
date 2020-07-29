@@ -25,9 +25,13 @@ namespace WG.EasyNetQ.ErrorStrategy
         {
             lock (_lock)
             {
+                if (!(context.Body != null && context.Body.Length > 0))
+                    return AckStrategies.NackWithoutRequeue;
                 var messageBody = Encoding.UTF8.GetString(context.Body);
                 var info = context.Info;
                 var model = UnitHelper.DeserializeObject<CustomerQueue>(messageBody);
+                if (model == null || string.IsNullOrWhiteSpace(model.QueueValue))
+                    return AckStrategies.NackWithoutRequeue;
                 var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
                 //todo:记录数据库
                 model.QueueName = info.RoutingKey;
@@ -37,10 +41,10 @@ namespace WG.EasyNetQ.ErrorStrategy
                 var str = model.Version;
                 content.Content = content.Content;
                 content.ExceptionMessage = new ExceptionMessage();
-                //content.ExceptionMessage.Message = exception;
+                content.ExceptionMessage.Message = exception.Message;
                 content.ExceptionMessage.Source = info.Queue;
                 model.QueueValue = UnitHelper.Serialize(content);
-                var result = DapperSqlHelper.GetByVersion("select * from [CustomerQueue] WHERE [Version]=@Version", new CustomerQueue() { Version = model.Version });
+                var result = DapperSqlHelper.GetByVersion(new CustomerQueue() { Version = model.Version });
                 if (result != null)
                 {
                     //重发次数
@@ -50,12 +54,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                     }
 
                     model.CetryCount = result.CetryCount.HasValue ? result.CetryCount + 1 : 1;
-                    DapperSqlHelper.Execute(@"UPDATE [CustomerQueue]
-                                       SET[QueueName] =@QueueName
-                                          ,[QueueValue] =@QueueValue
-                                          ,[IsConsume] =@IsConsume
-                                          ,[UpdateTime] =@UpdateTime 
-                                          ,[CetryCount] =@CetryCount WHERE Version=@Version", new CustomerQueue() { Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
+                    DapperSqlHelper.Update(new CustomerQueue() { Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
                 }
                 else
                 {
