@@ -27,11 +27,12 @@ namespace WG.EasyNetQ
             //     throw new Exception("ddd");
             // });
 
-
+            //EasyNetQs.Config();
 
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", "");
             //Console.WriteLine("First>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
+            Console.WriteLine("发送Send");
             for (int i = 0; i < 2; i++)
             {
                 //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
@@ -42,17 +43,15 @@ namespace WG.EasyNetQ
                 EasyNetQs.SendMessage("test.wj.test", json);
             }
 
-            //EasyNetQs.ReceiveMessage("test.wj.test", d =>
-            //{
-            //    Console.WriteLine(d);
-            //    throw new Exception("出错!");
-            //});
+            EasyNetQs.ReceiveMessage("test.wj.test", d =>
+            {
+                Console.WriteLine(d);
+            });
 
-            //EasyNetQs.SubscribeMessage("test.wj.sub", d =>
-            //{
-            //    Console.WriteLine(d);
-            //    throw new Exception("出错!");
-            //});
+            EasyNetQs.SubscribeMessage("test.wj.sub", d =>
+            {
+                Console.WriteLine(d);
+            });
 
             //EasyNetQs.SubscribeMessage("test.wj.sub1", d =>
             //{
@@ -60,7 +59,7 @@ namespace WG.EasyNetQ
             //    Console.WriteLine(d);
             //    //throw new Exception("出错!");
             //});
-
+            Console.WriteLine("发送Publicsh");
             for (int i = 0; i < 2; i++)
             {
                 CustomerPonds model = new CustomerPonds();

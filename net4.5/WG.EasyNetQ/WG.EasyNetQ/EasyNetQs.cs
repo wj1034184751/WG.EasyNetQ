@@ -50,7 +50,7 @@ namespace WG.EasyNetQ
 
         static EasyNetQs()
         {
-            HandleErrors();
+            //HandleErrors();
         }
 
         /// <summary>
@@ -68,6 +68,7 @@ namespace WG.EasyNetQ
             model.UpdateTime = DateTime.Now;
             content.Id = Uti.SnowflakeId.Default().NextId();
             content.Content = message;
+            content.QueueType = QueueType.Queue;
             model.QueueValue = UnitHelper.Serialize(content);
             model.Version = UnitHelper.GetVersion(queue, content.Id);
             lock (_obj)
@@ -149,6 +150,7 @@ namespace WG.EasyNetQ
             model.UpdateTime = DateTime.Now;
             content.Id = Uti.SnowflakeId.Default().NextId();
             content.Content = message;
+            content.QueueType = QueueType.Topic;
             model.QueueValue = UnitHelper.Serialize(content);
             model.Version = UnitHelper.GetVersion(topic, content.Id);
             lock (_obj)
@@ -293,7 +295,7 @@ namespace WG.EasyNetQ
         /// </summary>
         public static void RetrySend()
         {
-            var list = DapperSqlHelper.GetList("SELECT  top 10 * FROM  [CustomerQueue] WHERE IsConsume=2 ORDER BY UpdateTime");
+            var list = DapperSqlHelper.GetList("SELECT  top 10 * FROM  [CustomerQueue] WHERE IsConsume=@IsConsume ORDER BY UpdateTime", new CustomerQueue() { IsConsume = (int?)MqStatus.Wait });
             if (list.Any())
             {
                 foreach (var item in list)
@@ -312,10 +314,15 @@ namespace WG.EasyNetQ
             //持久化插入数据库
             lock (_obj)
             {
+                var content = UnitHelper.DeserializeObject<QueueValue>(sendModel.QueueValue);
+               
                 var result = DapperSqlHelper.Execute("update  [CustomerQueue] set [CetryCount]=ISNULL([CetryCount],0)+1 where Version=@Version", new CustomerQueue { Version = sendModel.Version });
                 if (result >= 1)
                 {
-                    client.Send(sendModel.QueueName, sendModel.QueueValue);
+                    if (content.QueueType == QueueType.Topic)
+                        client.Publish<CustomerQueue>(sendModel, sendModel.QueueName);
+                    else if (content.QueueType == QueueType.Queue)
+                        client.Send<CustomerQueue>(sendModel.QueueName, sendModel);
                 }
             }
         }
@@ -343,7 +350,8 @@ namespace WG.EasyNetQ
                 while (true)
                 {
                     RetrySend();
-                    Thread.Sleep(1000);
+                    //每过十秒
+                    Thread.Sleep(10000);
                 }
             });
 

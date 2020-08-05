@@ -66,6 +66,7 @@
     <Compile Include="EasyNetQs.cs" />
     <Compile Include="ErrorStrategy\AlwaysRequeueErrorStrategy.cs" />
     <Compile Include="MqEnum\MqStatus.cs" />
+    <Compile Include="MqEnum\QueueType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Uti\ConfigUtils.cs" />

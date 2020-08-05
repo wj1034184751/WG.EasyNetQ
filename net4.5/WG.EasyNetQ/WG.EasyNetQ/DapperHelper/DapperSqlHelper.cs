@@ -79,7 +79,7 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public static int GetCountByVersion( CustomerQueue par)
+        public static int GetCountByVersion(CustomerQueue par)
         {
             using (var connection = DbConnection)
             {
@@ -102,6 +102,15 @@ namespace WG.EasyNetQ.DapperHelper
             using (var connection = DbConnection)
             {
                 var result = connection.Query<CustomerQueue>(sql);
+                return result.ToList<CustomerQueue>();
+            }
+        }
+
+        public static List<CustomerQueue> GetList(string sql, CustomerQueue par)
+        {
+            using (var connection = DbConnection)
+            {
+                var result = connection.Query<CustomerQueue>(sql,par);
                 return result.ToList<CustomerQueue>();
             }
         }

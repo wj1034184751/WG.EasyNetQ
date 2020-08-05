@@ -38,7 +38,6 @@ namespace WG.EasyNetQ.ErrorStrategy
                 model.IsConsume = (int)MqStatus.Failed;
                 model.UpdateTime = DateTime.Now;
                 model.Version = UnitHelper.GetVersion(info.RoutingKey, content.Id);
-                var str = model.Version;
                 content.Content = content.Content;
                 content.ExceptionMessage = new ExceptionMessage();
                 content.ExceptionMessage.Message = exception.Message;
@@ -48,7 +47,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                 if (result != null)
                 {
                     //重发次数
-                    if (result.CetryCount >= 10)
+                    if (result.CetryCount >= 5)
                     {
                         return AckStrategies.NackWithoutRequeue;
                     }

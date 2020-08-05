@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WG.EasyNetQ.MqEnum;
 
 namespace WG.EasyNetQ.DapperHelper
 {
@@ -21,6 +22,8 @@ namespace WG.EasyNetQ.DapperHelper
     public partial class QueueValue
     {
         public long Id { get; set; }
+
+        public QueueType QueueType { get; set; }
 
         public string Content { get; set; }
 
