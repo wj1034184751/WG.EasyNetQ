@@ -17,3 +17,6 @@ E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.exe
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.pdb
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.csprojAssemblyReference.cache
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.dll
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.pdb
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.xml

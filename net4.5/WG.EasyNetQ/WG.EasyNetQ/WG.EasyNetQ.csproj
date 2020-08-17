@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.9.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.9.4\lib\net45\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.40\lib\net45\Dapper.dll</HintPath>
     </Reference>
@@ -59,12 +62,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Ioc\IServiceCollection.cs" />
+    <Compile Include="Core\ET.Builder.cs" />
+    <Compile Include="Core\ET.Options.cs" />
     <Compile Include="DapperHelper\BaseDbContext.cs" />
+    <Compile Include="DapperHelper\Core\EFOptions.cs" />
+    <Compile Include="DapperHelper\Core\ET.SqlServerOptions.cs" />
     <Compile Include="DapperHelper\CustomerQueue.cs" />
     <Compile Include="DapperHelper\DapperSqlHelper.cs" />
+    <Compile Include="DapperHelper\Extensions\ET.Options.Extensions.cs" />
     <Compile Include="DapperHelper\Repository.cs" />
     <Compile Include="EasyNetQs.cs" />
     <Compile Include="ErrorStrategy\AlwaysRequeueErrorStrategy.cs" />
+    <Compile Include="Extensions\IETOptionsExtension.cs" />
+    <Compile Include="Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="MqEnum\MqStatus.cs" />
     <Compile Include="MqEnum\QueueType.cs" />
     <Compile Include="Program.cs" />
@@ -79,5 +90,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

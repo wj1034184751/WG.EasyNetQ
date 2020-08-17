@@ -37,6 +37,9 @@ namespace WG.EasyNetQ
                         if (_client == null)
                         {
                             string connStr = ConfigUtils.GetValue<string>("RabbitMq");
+                            var config = new ConnectionConfiguration();
+                            //config.Port=
+                            //RabbitHutch.CreateBus()
                             //_client = RabbitHutch.CreateBus(connStr);
                             //注册错误重发
                             _client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
