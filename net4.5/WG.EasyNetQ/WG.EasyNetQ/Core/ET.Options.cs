@@ -19,5 +19,15 @@ namespace WG.EasyNetQ.Core
         {
             Extensions = new List<IETOptionsExtension>();
         }
+
+        public void RegisterExtension(IETOptionsExtension extension)
+        {
+            if(extension==null)
+            {
+                throw new ArgumentException(nameof(extension));
+            }
+
+            Extensions.Add(extension);
+        }
     }
 }

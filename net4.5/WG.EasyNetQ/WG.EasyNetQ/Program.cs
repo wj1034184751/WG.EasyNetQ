@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WG.EasyNetQ.Core.Ioc;
+using Microsoft.Extensions.DependencyInjection;
+using WG.EasyNetQ.ETCore;
 
 namespace WG.EasyNetQ
 {
@@ -33,6 +35,15 @@ namespace WG.EasyNetQ
             //EasyNetQs.SubscribeMessage<string>("customer_ponds_reserve_id2", "");
             //Console.WriteLine("First>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
+            IServiceCollection Services = new ServiceCollection();
+            Services.AddCap(setup =>
+            {
+                setup.UseSqlServer("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300");
+            });
+
+            Services.BeginRegister();
+
+            //IETPublisher _etBus=Services
             Console.WriteLine("发送Send");
             for (int i = 0; i < 2; i++)
             {

@@ -65,15 +65,24 @@
     <Compile Include="Core\Ioc\IServiceCollection.cs" />
     <Compile Include="Core\ET.Builder.cs" />
     <Compile Include="Core\ET.Options.cs" />
+    <Compile Include="Core\Ioc\IServiceProvider.cs" />
+    <Compile Include="Core\Ioc\ServiceCollection.cs" />
+    <Compile Include="Core\Ioc\ServiceDescriptor.cs" />
+    <Compile Include="Core\Ioc\ServiceProvider.cs" />
     <Compile Include="DapperHelper\BaseDbContext.cs" />
     <Compile Include="DapperHelper\Core\EFOptions.cs" />
     <Compile Include="DapperHelper\Core\ET.SqlServerOptions.cs" />
     <Compile Include="DapperHelper\CustomerQueue.cs" />
     <Compile Include="DapperHelper\DapperSqlHelper.cs" />
     <Compile Include="DapperHelper\Extensions\ET.Options.Extensions.cs" />
+    <Compile Include="DapperHelper\Extensions\ET.SqlServerOptionsExtension.cs" />
+    <Compile Include="DapperHelper\IDbContext.cs" />
+    <Compile Include="DapperHelper\IRepository.cs" />
     <Compile Include="DapperHelper\Repository.cs" />
     <Compile Include="EasyNetQs.cs" />
     <Compile Include="ErrorStrategy\AlwaysRequeueErrorStrategy.cs" />
+    <Compile Include="ETCore\ETPublisher.cs" />
+    <Compile Include="ETCore\IETPublisher.cs" />
     <Compile Include="Extensions\IETOptionsExtension.cs" />
     <Compile Include="Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="MqEnum\MqStatus.cs" />
@@ -90,6 +99,8 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DapperHelper\Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

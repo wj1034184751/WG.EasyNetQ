@@ -11,6 +11,12 @@ namespace WG.EasyNetQ.Core.Ioc
     /// </summary>
     public interface IServiceCollection
     {
+        IServiceProvider ServiceProvider { get; set; }
+
         IServiceCollection AddSingleton<TService>(TService implementationInstance) where TService : class;
+
+        IServiceCollection AddSingleton(Type serviceType, Type implementationType);
+
+        void BeginRegister();
     }
 }

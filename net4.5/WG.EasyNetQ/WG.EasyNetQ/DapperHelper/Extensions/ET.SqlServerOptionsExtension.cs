@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WG.EasyNetQ.Core.Ioc;
+using WG.EasyNetQ.DapperHelper.Core;
+using WG.EasyNetQ.Extensions;
+
+namespace WG.EasyNetQ.DapperHelper.Extensions
+{
+    internal class SqlServerETOptionsExtension : IETOptionsExtension
+    {
+        private readonly Action<SqlServerOptions> _configure;
+
+        public SqlServerETOptionsExtension(Action<SqlServerOptions> configure)
+        {
+            this._configure = configure;
+        }
+
+        public void AddServices(IServiceCollection services)
+        {
+            services.AddSingleton(typeof(Repository<,>), typeof(IRepository<>));
+        }
+
+        private void AddSqlServerOptions(IServiceCollection services)
+        {
+            var sqlServerOptions = new SqlServerOptions();
+
+            _configure(sqlServerOptions);
+        }
+    }
+}

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WG.EasyNetQ.Core;
 using WG.EasyNetQ.Core.Ioc;
 
-namespace WG.EasyNetQ.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

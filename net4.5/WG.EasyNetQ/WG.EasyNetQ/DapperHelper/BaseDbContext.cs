@@ -22,20 +22,17 @@ namespace WG.EasyNetQ.DapperHelper
 
                     //_dbConnection = new SqlConnection(ConfigUtils.GetValue<string>("MQDbconn"));
                     //_dbConnection=new SqlConnection()
+                    _dbConnection = new SqlConnection(_connectionString);
                     _dbConnection.Open();
                 }
 
-                if (string.IsNullOrWhiteSpace(_dbConnection.ConnectionString))
-                {
-                    //_dbConnection.ConnectionString = ConfigUtils.GetValue<string>("MQDbconn");
-                }
                 return _dbConnection;
             }
         }
 
-        public BaseDbContext()
+        public BaseDbContext(string connectionString)
         {
-            //this._connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
+            this._connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }
 
         public IDbTransaction DbTransaction { get; set; }
