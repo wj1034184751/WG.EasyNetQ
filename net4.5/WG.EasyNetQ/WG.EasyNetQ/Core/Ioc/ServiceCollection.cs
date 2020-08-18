@@ -1,7 +1,9 @@
 ﻿using Autofac;
+using Autofac.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,15 +40,28 @@ namespace WG.EasyNetQ.Core.Ioc
             return this;
         }
 
-
         public IServiceCollection AddSingleton<TService>(TService implementationInstance) where TService : class
         {
-            throw new NotImplementedException();
+            ListServiceDescriptor.Add(new ServiceDescriptor(implementationInstance.GetType(), typeof(TService)));
+            _builder.RegisterInstance(implementationInstance).As<TService>().SingleInstance();
+            return this;
         }
 
         public IServiceCollection AddSingleton(Type serviceType, Type implementationType)
         {
-            throw new NotImplementedException();
+            ListServiceDescriptor.Add(new ServiceDescriptor(implementationType, serviceType));
+            _builder.RegisterGeneric(implementationType).As(serviceType).SingleInstance();
+            return this;
+        }
+
+        public IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType)
+        {
+            ListServiceDescriptor.Add(new ServiceDescriptor(implementationType, serviceType));
+            _builder.RegisterAssemblyTypes(serviceType.GetTypeInfo().Assembly)
+                .Where(t => t.IsClosedTypeOf(implementationType))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
+            return this;
         }
     }
 }

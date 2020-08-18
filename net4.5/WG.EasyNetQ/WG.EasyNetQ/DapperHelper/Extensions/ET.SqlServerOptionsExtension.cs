@@ -20,7 +20,8 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
 
         public void AddServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(Repository<,>), typeof(IRepository<>));
+            services.AddSingletonGeneric(typeof(Repository<,>), typeof(IRepository<>));
+            AddSqlServerOptions(services);
         }
 
         private void AddSqlServerOptions(IServiceCollection services)
@@ -28,6 +29,8 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
             var sqlServerOptions = new SqlServerOptions();
 
             _configure(sqlServerOptions);
+
+            services.AddSingleton(new BaseDbContext(sqlServerOptions.ConnectionString));
         }
     }
 }

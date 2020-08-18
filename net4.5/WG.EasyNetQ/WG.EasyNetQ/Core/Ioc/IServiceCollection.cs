@@ -17,6 +17,8 @@ namespace WG.EasyNetQ.Core.Ioc
 
         IServiceCollection AddSingleton(Type serviceType, Type implementationType);
 
+        IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType);
+
         void BeginRegister();
     }
 }
