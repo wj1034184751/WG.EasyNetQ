@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WG.EasyNetQ.Core.Ioc;
 using WG.EasyNetQ.DapperHelper.Core;
+using WG.EasyNetQ.ETCore;
 using WG.EasyNetQ.Extensions;
 
 namespace WG.EasyNetQ.DapperHelper.Extensions
@@ -20,7 +21,8 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
 
         public void AddServices(IServiceCollection services)
         {
-            services.AddSingletonGeneric(typeof(Repository<,>), typeof(IRepository<>));
+            services.AddSingletonGeneric(typeof(Repository<,>));
+            services.AddScoped<IETPublisher, ETPublisher>();
             AddSqlServerOptions(services);
         }
 
@@ -30,7 +32,7 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
 
             _configure(sqlServerOptions);
 
-            services.AddSingleton(new BaseDbContext(sqlServerOptions.ConnectionString));
+            services.AddSingleton(new ETDbContext(sqlServerOptions.ConnectionString));
         }
     }
 }

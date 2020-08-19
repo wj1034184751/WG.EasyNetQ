@@ -6,15 +6,13 @@ using System.Linq;
 
 namespace WG.EasyNetQ.DapperHelper
 {
-    public class Repository<T, TDbContext> : IRepository<T> where T : class where TDbContext:BaseDbContext
+    public class Repository<T, IETDbContext> : IRepository<T> where T : class where IETDbContext : ETDbContext
     {
-        protected readonly TDbContext _context;
+        protected readonly IETDbContext _context;
 
-        public Repository(TDbContext context)
+        public Repository(IETDbContext context)
         {
-            if(context==null)
-                throw new ArgumentNullException(nameof(context));
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         #region

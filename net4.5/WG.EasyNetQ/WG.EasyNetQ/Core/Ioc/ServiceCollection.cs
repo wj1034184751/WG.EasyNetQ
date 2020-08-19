@@ -31,6 +31,7 @@ namespace WG.EasyNetQ.Core.Ioc
             ServiceProvider = new ServiceProvider();
             this.AddInstance(ServiceProvider);
             Container = this._builder.Build();
+            ServiceProvider.Container = Container;
         }
 
         public IServiceCollection AddInstance<IService>(IService instance) where IService:class
@@ -61,6 +62,29 @@ namespace WG.EasyNetQ.Core.Ioc
                 .Where(t => t.IsClosedTypeOf(implementationType))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+            return this;
+        }
+
+        public IServiceCollection AddSingletonGeneric(Type serviceType)
+        {
+            foreach(var item in serviceType.GetTypeInfo().Assembly.GetTypes().Where(t=>t.IsGenericType&&!t.IsInterface))
+            {
+                _builder.RegisterGeneric(item).AsImplementedInterfaces().InstancePerLifetimeScope();
+            }
+            return this;
+        }
+
+        public IServiceCollection AddScoped<IService, TImplementation>()
+        {
+            ListServiceDescriptor.Add(new ServiceDescriptor(typeof(TImplementation), typeof(IService)));
+            _builder.RegisterType<TImplementation>().As<IService>().InstancePerLifetimeScope();// 构造函数注入
+            return this;
+        }
+
+        public IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func)
+        {
+            //ListServiceDescriptor.Add(new ServiceDescriptor(typeof(TImplementation), typeof(IService)));
+            _builder.Register(func).InstancePerLifetimeScope();
             return this;
         }
     }

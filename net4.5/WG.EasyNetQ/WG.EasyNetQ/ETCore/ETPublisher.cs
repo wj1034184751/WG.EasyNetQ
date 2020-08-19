@@ -9,19 +9,20 @@ using WG.EasyNetQ.Uti;
 
 namespace WG.EasyNetQ.ETCore
 {
-    public abstract class ETPublisher : IETPublisher
+    public class ETPublisher : IETPublisher
     {
-        private readonly IRepository<CustomerQueue> _IRepository;
+        private readonly IETRepository<CustomerQueue> _eTRepository;
 
-        public ETPublisher(IRepository<CustomerQueue> IRepository)
+        public ETPublisher(IETRepository<CustomerQueue> eTRepository)
         {
-            this._IRepository = IRepository;
+            this._eTRepository = eTRepository;
         }
+
         private static object _obj = new object();
 
         public void Publish(string name, string message)
         {
-            throw new NotImplementedException();
+            this._eTRepository.Insert(new CustomerQueue() { QueueName = name, QueueValue = message });
         }
 
         public void Publish<T>(string name, T message)
@@ -39,7 +40,7 @@ namespace WG.EasyNetQ.ETCore
             //持久化插入数据库
             var content = new QueueValue()
             {
-                Id= Uti.SnowflakeId.Default().NextId(),
+                Id = Uti.SnowflakeId.Default().NextId(),
                 Content = message,
                 QueueType = QueueType.Queue,
             };
@@ -52,13 +53,13 @@ namespace WG.EasyNetQ.ETCore
                 QueueValue = UnitHelper.Serialize(content),
                 Version = UnitHelper.GetVersion(name, content.Id)
             };
-        
+
             lock (_obj)
             {
                 var result = DapperSqlHelper.GetCountByVersion(new CustomerQueue { Version = model.Version });
                 if (result == 0)
                 {
-                    this._IRepository.Insert(model);
+                    this._eTRepository.Insert(model);
                     //DapperSqlHelper.Insert(model);
                     //client.Send<CustomerQueue>(queue, model);
                 }

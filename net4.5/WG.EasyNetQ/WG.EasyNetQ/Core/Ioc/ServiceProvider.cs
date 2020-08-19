@@ -9,7 +9,25 @@ namespace WG.EasyNetQ.Core.Ioc
 {
     public class ServiceProvider : IServiceProvider
     {
+        public IServiceCollection ServiceCollection { get; set; }
+
         private IContainer _container;
+
+        public IContainer Container
+        {
+            set
+            {
+                _container = value;
+                var scope = _container.BeginLifetimeScope();
+                _lifetimeScope = scope;
+            }
+            get
+            {
+                return _container;
+            }
+        }
+
+        public ILifetimeScope _lifetimeScope;
 
         public ILifetimeScope LifetimeScope
         {
@@ -23,11 +41,9 @@ namespace WG.EasyNetQ.Core.Ioc
             }
         }
 
-        public ILifetimeScope _lifetimeScope;
-
         public T GetRequiredService<T>()
         {
-            throw new NotImplementedException();
+            return _lifetimeScope.Resolve<T>();
         }
     }
 }

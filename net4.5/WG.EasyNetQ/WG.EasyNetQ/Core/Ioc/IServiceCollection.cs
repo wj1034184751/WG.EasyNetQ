@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,12 @@ namespace WG.EasyNetQ.Core.Ioc
         IServiceCollection AddSingleton(Type serviceType, Type implementationType);
 
         IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType);
+
+        IServiceCollection AddSingletonGeneric(Type serviceType);
+
+        IServiceCollection AddScoped<IService, ITmplementation>();
+
+        IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func);
 
         void BeginRegister();
     }

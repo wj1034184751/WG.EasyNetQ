@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 using WG.EasyNetQ.Core.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using WG.EasyNetQ.ETCore;
+using Autofac;
+using WG.EasyNetQ.Test;
+using WG.EasyNetQ.DapperHelper;
+using System.Reflection;
+using WG.EasyNetQ.Extensions;
 
 namespace WG.EasyNetQ
 {
@@ -14,6 +19,35 @@ namespace WG.EasyNetQ
     {
         static void Main(string[] args)
         {
+            //var builder = new ContainerBuilder();
+            //builder.Register(d => new ETDbContext("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300")).InstancePerLifetimeScope();
+            //builder.RegisterType<ETPublisher>().As<IETPublisher>();
+            ////builder.RegisterGeneric(typeof(ETRepository<>)).AsImplementedInterfaces().InstancePerLifetimeScope();
+            //builder.RegisterType<TestAutoFacClass>().As<ITestAutoFacClass>();
+            //var classGenerics = typeof(Repository<,>).GetTypeInfo().Assembly.GetTypes()
+            //                .Where(t => t.IsGenericType && !t.IsInterface);
+            //foreach (var item in classGenerics)
+            //{
+            //    builder.RegisterGeneric(item).AsImplementedInterfaces().InstancePerLifetimeScope();
+            //}
+            //builder.RegisterAssemblyTypes(typeof(Repository<,>).GetTypeInfo().Assembly)
+            //   .Where(t => t.IsClosedTypeOf(typeof(IRepository<>)) || t.HasImplementdRawGeneric(typeof(IRepository<>)))
+            //   .AsImplementedInterfaces()
+            //   .InstancePerLifetimeScope();
+
+            //IContainer container = builder.Build();
+            //using (var scope = container.BeginLifetimeScope())
+            //{
+            //    var component = scope.Resolve<ITestAutoFacClass>();
+            //    component.Print("wj", "v1");
+            //    var com2 = scope.Resolve<IETPublisher>();
+            //    com2.Send("", "");
+            //}
+
+            //IETRepository<CustomerQueue> repository = new ETRepository<CustomerQueue>(new ETDbContext("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300"));
+            //repository.Insert(new CustomerQueue() { Version="dsf"});
+
+            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             //var str = ConfigurationManager.ConnectionStrings["ZmDatabaseEntities1"].ToString();
             //Dictionary<string, string> dic = new Dictionary<string, string>();
             //dic.Add("data source", "");
@@ -42,6 +76,11 @@ namespace WG.EasyNetQ
             });
 
             Services.BeginRegister();
+
+            IETPublisher _etBus = Services.ServiceProvider.GetRequiredService<IETPublisher>();
+
+            _etBus.Send("test.v1", "测试");
+
 
             //IETPublisher _etBus=Services
             Console.WriteLine("发送Send");
@@ -139,11 +178,11 @@ namespace WG.EasyNetQ
                     t.OperateId = i;
                     t.OperateName = string.Format("王{0}", i);
                     t.MarkUserId = i;
-                        //t.MarkTime = DateTime.Now;
-                        t.CustomerId = i;
+                    //t.MarkTime = DateTime.Now;
+                    t.CustomerId = i;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(t);
-                        //EasyNetQs.SendMessages("customer.ponds.reserve", json);
-                        EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
+                    //EasyNetQs.SendMessages("customer.ponds.reserve", json);
+                    EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
                 }
             }));
 
@@ -155,11 +194,11 @@ namespace WG.EasyNetQ
                     t.OperateId = i;
                     t.OperateName = string.Format("王{0}", i);
                     t.MarkUserId = i;
-                        //t.MarkTime = DateTime.Now;
-                        t.CustomerId = i;
+                    //t.MarkTime = DateTime.Now;
+                    t.CustomerId = i;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(t);
-                        //EasyNetQs.SendMessages("customer.ponds.reserve", json);
-                        EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
+                    //EasyNetQs.SendMessages("customer.ponds.reserve", json);
+                    EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
                 }
             }));
 
@@ -171,11 +210,11 @@ namespace WG.EasyNetQ
                     t.OperateId = i;
                     t.OperateName = string.Format("王{0}", i);
                     t.MarkUserId = i;
-                        //t.MarkTime = DateTime.Now;
-                        t.CustomerId = i;
+                    //t.MarkTime = DateTime.Now;
+                    t.CustomerId = i;
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(t);
-                        //EasyNetQs.SendMessages("customer.ponds.reserve", json);
-                        EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
+                    //EasyNetQs.SendMessages("customer.ponds.reserve", json);
+                    EasyNetQs.SendMessage<CustomerPonds>("customer.ponds.reserve", t);
                 }
             }));
 

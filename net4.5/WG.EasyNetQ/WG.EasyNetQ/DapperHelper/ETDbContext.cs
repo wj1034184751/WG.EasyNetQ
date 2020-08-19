@@ -9,7 +9,7 @@ using WG.EasyNetQ.Uti;
 
 namespace WG.EasyNetQ.DapperHelper
 {
-    public class BaseDbContext
+    public class ETDbContext
     {
         private IDbConnection _dbConnection;
         protected string _connectionString = string.Empty;
@@ -19,9 +19,6 @@ namespace WG.EasyNetQ.DapperHelper
             {
                 if (_dbConnection == null)
                 {
-
-                    //_dbConnection = new SqlConnection(ConfigUtils.GetValue<string>("MQDbconn"));
-                    //_dbConnection=new SqlConnection()
                     _dbConnection = new SqlConnection(_connectionString);
                     _dbConnection.Open();
                 }
@@ -30,7 +27,7 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public BaseDbContext(string connectionString)
+        public ETDbContext(string connectionString)
         {
             this._connectionString = !string.IsNullOrWhiteSpace(connectionString) ? connectionString : throw new ArgumentNullException(nameof(connectionString));
         }

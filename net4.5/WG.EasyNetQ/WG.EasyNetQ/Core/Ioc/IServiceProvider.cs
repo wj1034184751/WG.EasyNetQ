@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace WG.EasyNetQ.Core.Ioc
 {
     public interface IServiceProvider
     {
+        IContainer Container { get; set; }
+
         T GetRequiredService<T>();
     }
 }

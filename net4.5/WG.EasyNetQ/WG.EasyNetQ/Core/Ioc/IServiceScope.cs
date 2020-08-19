@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WG.EasyNetQ.DapperHelper
+namespace WG.EasyNetQ.Core.Ioc
 {
-    public interface IDbContext
+    public interface IServiceScope
     {
     }
 }
