@@ -15,5 +15,13 @@ namespace WG.EasyNetQ.ETCore
         void Publish(string name, string message);
 
         void Publish<T>(string name, T message);
+
+        void Receive<T>(string name, Action<T> act);
+
+        void Receive(string name, Action<string> act);
+
+        void Subscribe<T>(string name, Action<T> act);
+
+        void Subscribe(string name, Action<string> act);
     }
 }

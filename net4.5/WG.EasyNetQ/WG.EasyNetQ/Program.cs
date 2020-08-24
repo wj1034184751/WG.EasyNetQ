@@ -19,6 +19,7 @@ namespace WG.EasyNetQ
     {
         static void Main(string[] args)
         {
+            //SqlConnectionTest.Test();
             //var builder = new ContainerBuilder();
             //builder.Register(d => new ETDbContext("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300")).InstancePerLifetimeScope();
             //builder.RegisterType<ETPublisher>().As<IETPublisher>();
@@ -72,7 +73,21 @@ namespace WG.EasyNetQ
             IServiceCollection Services = new ServiceCollection();
             Services.AddCap(setup =>
             {
-                setup.UseSqlServer("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300");
+                //setup.UseSqlServer("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300");
+
+                setup.UseSqlServer(d =>
+                {
+                    d.ConnectionString = "Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300";
+                });
+
+                setup.UseRabbitMQ(option =>
+                {
+                    option.VirtualHost = "/";
+                    option.HostName = "192.168.19.190";
+                    option.Port = 5672;
+                    option.UserName = "jp";
+                    option.Password = "123456";
+                });
             });
 
             Services.BeginRegister();

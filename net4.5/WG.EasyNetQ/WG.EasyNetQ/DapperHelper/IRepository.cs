@@ -21,6 +21,8 @@ namespace WG.EasyNetQ.DapperHelper
 
         bool Update(T entity);
 
+        void UpdateState(T entity);
+
         bool Delete(T entity);
         #endregion
     }

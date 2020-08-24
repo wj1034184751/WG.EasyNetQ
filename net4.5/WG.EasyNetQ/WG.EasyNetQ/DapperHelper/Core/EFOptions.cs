@@ -9,7 +9,5 @@ namespace WG.EasyNetQ.DapperHelper.Core
     public class EFOptions
     {
         public const string DefaultSchema = "ET";
-
-
     }
 }

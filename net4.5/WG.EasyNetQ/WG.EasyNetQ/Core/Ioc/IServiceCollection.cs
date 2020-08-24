@@ -16,6 +16,10 @@ namespace WG.EasyNetQ.Core.Ioc
 
         IServiceCollection AddSingleton<TService>(TService implementationInstance) where TService : class;
 
+        IServiceCollection AddSingleton<TService, TImplementation>()
+        where TService : class
+        where TImplementation : class, TService;
+     
         IServiceCollection AddSingleton(Type serviceType, Type implementationType);
 
         IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType);

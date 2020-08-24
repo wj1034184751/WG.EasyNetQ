@@ -71,6 +71,14 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
+        public void UpdateState(T model)
+        {
+            using (var connection = _context.DbConnection)
+            {
+                connection.Execute("Update [CustomerQueue] set [IsConsume]=@IsConsume where Version=@Version", model);
+            }
+        }
+
         public bool Delete(T entity)
         {
             using (var connection = _context.DbConnection)

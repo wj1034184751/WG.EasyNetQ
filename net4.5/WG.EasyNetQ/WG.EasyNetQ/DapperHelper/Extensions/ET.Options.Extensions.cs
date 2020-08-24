@@ -9,7 +9,7 @@ using WG.EasyNetQ.DapperHelper.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ETOptionsExtensions
+    public static class ETSqlOptionsExtensions
     {
         public static ETOptions UseSqlServer(this ETOptions options, string connectionString)
         {

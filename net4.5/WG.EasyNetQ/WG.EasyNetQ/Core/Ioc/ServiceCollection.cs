@@ -34,7 +34,7 @@ namespace WG.EasyNetQ.Core.Ioc
             ServiceProvider.Container = Container;
         }
 
-        public IServiceCollection AddInstance<IService>(IService instance) where IService:class
+        public IServiceCollection AddInstance<IService>(IService instance) where IService : class
         {
             ListServiceDescriptor.Add(new ServiceDescriptor(instance.GetType(), typeof(IService)));
             _builder.RegisterInstance(instance).As<IService>();
@@ -48,10 +48,12 @@ namespace WG.EasyNetQ.Core.Ioc
             return this;
         }
 
-        public IServiceCollection AddSingleton(Type serviceType, Type implementationType)
+        public IServiceCollection AddSingleton<TService, TImplementation>()
+        where TService : class
+        where TImplementation : class, TService
         {
-            ListServiceDescriptor.Add(new ServiceDescriptor(implementationType, serviceType));
-            _builder.RegisterGeneric(implementationType).As(serviceType).SingleInstance();
+            ListServiceDescriptor.Add(new ServiceDescriptor(typeof(TImplementation), typeof(TService)));
+            _builder.RegisterType<TImplementation>().As<TService>().SingleInstance();
             return this;
         }
 
@@ -83,9 +85,13 @@ namespace WG.EasyNetQ.Core.Ioc
 
         public IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func)
         {
-            //ListServiceDescriptor.Add(new ServiceDescriptor(typeof(TImplementation), typeof(IService)));
             _builder.Register(func).InstancePerLifetimeScope();
             return this;
+        }
+
+        public IServiceCollection AddSingleton(Type serviceType, Type implementationType)
+        {
+            throw new NotImplementedException();
         }
     }
 }
