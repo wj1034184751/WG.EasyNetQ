@@ -17,12 +17,7 @@ namespace WG.EasyNetQ.DapperHelper
         {
             get
             {
-                if (_dbConnection == null)
-                {
-                    _dbConnection = new SqlConnection(_connectionString);
-                    _dbConnection.Open();
-                }
-
+                _dbConnection = new SqlConnection(_connectionString);
                 return _dbConnection;
             }
         }

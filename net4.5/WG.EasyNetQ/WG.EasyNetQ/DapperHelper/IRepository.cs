@@ -11,13 +11,15 @@ namespace WG.EasyNetQ.DapperHelper
         #region
         List<T> GetList(string sql);
 
-        int GetByVersion(string sql, CustomerQueue par);
+        int GetByVersion(string sql, T entity);
+
+        T GetByVersion(T entity);
 
         dynamic Insert(T entity);
 
         dynamic Execute(string sql);
 
-        dynamic Execute(string sql, CustomerQueue par);
+        dynamic Execute(string sql, T entity);
 
         bool Update(T entity);
 

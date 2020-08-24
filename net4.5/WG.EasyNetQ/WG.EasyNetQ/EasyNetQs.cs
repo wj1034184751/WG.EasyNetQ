@@ -42,7 +42,7 @@ namespace WG.EasyNetQ
                             //RabbitHutch.CreateBus()
                             //_client = RabbitHutch.CreateBus(connStr);
                             //注册错误重发
-                            _client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
+                            //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
                         }
                     }
                 }

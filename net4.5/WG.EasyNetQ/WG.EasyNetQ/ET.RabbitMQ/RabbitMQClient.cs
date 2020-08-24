@@ -29,7 +29,7 @@ namespace WG.EasyNetQ.ET.RabbitMQ
                         VirtualHost = _rabbitMQOptions.VirtualHost,
                         UserName = _rabbitMQOptions.UserName,
                         Password = _rabbitMQOptions.Password
-                    }, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
+                    }, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy())); //注册异常重发
                 }
 
                 return _client;

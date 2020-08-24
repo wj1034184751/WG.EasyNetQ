@@ -85,7 +85,7 @@ namespace WG.EasyNetQ.ETCore
 
             lock (_obj)
             {
-                var result = DapperSqlHelper.GetCountByVersion(new CustomerQueue { Version = model.Version });
+                var result = _eTRepository.GetCountByVersion(new CustomerQueue { Version = model.Version });
                 if (result == 0)
                 {
                     this._eTRepository.Insert(model);

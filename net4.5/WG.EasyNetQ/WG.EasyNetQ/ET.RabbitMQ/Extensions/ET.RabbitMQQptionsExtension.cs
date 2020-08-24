@@ -1,9 +1,11 @@
-﻿using System;
+﻿using EasyNetQ.Consumer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WG.EasyNetQ.Core.Ioc;
+using WG.EasyNetQ.ErrorStrategy;
 using WG.EasyNetQ.ET.RabbitMQ.Core;
 using WG.EasyNetQ.Extensions;
 
@@ -23,6 +25,7 @@ namespace WG.EasyNetQ.ET.RabbitMQ.Extensions
             var options = new RabbitMQOptions();
             _configure?.Invoke(options);
             services.AddSingleton(options);
+            services.AddSingleton<IConsumerErrorStrategy, AlwaysRequeueErrorStrategy>();
             services.AddSingleton<IRabbitMQClient,RabbitMQClient>();
         }
     }

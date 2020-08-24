@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WG.EasyNetQ.Core.DI;
 using WG.EasyNetQ.DapperHelper;
 using WG.EasyNetQ.MqEnum;
 using WG.EasyNetQ.Uti;
@@ -15,6 +16,15 @@ namespace WG.EasyNetQ.ErrorStrategy
     /// </summary>
     public class AlwaysRequeueErrorStrategy : IConsumerErrorStrategy
     {
+        private readonly IETRepository<CustomerQueue> _eTRepository;
+
+        public AlwaysRequeueErrorStrategy() { }
+
+        public AlwaysRequeueErrorStrategy(IETRepository<CustomerQueue> eTRepository)
+        {
+            this._eTRepository = eTRepository;
+        }
+
         private object _lock = new object();
 
         public void Dispose()
@@ -43,6 +53,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                 content.ExceptionMessage.Message = exception.Message;
                 content.ExceptionMessage.Source = info.Queue;
                 model.QueueValue = UnitHelper.Serialize(content);
+
                 var result = DapperSqlHelper.GetByVersion(new CustomerQueue() { Version = model.Version });
                 if (result != null)
                 {

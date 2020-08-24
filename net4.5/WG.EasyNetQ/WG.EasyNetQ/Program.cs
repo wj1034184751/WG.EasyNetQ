@@ -94,47 +94,57 @@ namespace WG.EasyNetQ
 
             IETPublisher _etBus = Services.ServiceProvider.GetRequiredService<IETPublisher>();
 
-            _etBus.Send("test.v1", "测试");
+            for(var i=0;i<=10;i++)
+            {
+                _etBus.Send("test.v1", $"测试{1}");
+            }
+
+            _etBus.Receive("test.v1", d =>
+             {
+                 Console.WriteLine(d);
+                 throw new Exception("出错!");
+             });
 
 
             //IETPublisher _etBus=Services
-            Console.WriteLine("发送Send");
-            for (int i = 0; i < 2; i++)
-            {
-                //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
-                CustomerPonds model = new CustomerPonds();
-                model.CustomerId = i;
-                model.MarkUserId = i;
-                var json = Uti.UnitHelper.Serialize(model);
-                EasyNetQs.SendMessage("test.wj.test", json);
-            }
-
-            EasyNetQs.ReceiveMessage("test.wj.test", d =>
-            {
-                Console.WriteLine(d);
-            });
-
-            EasyNetQs.SubscribeMessage("test.wj.sub", d =>
-            {
-                Console.WriteLine(d);
-            });
-
-            //EasyNetQs.SubscribeMessage("test.wj.sub1", d =>
+            //Console.WriteLine("发送Send");
+            //for (int i = 0; i < 2; i++)
             //{
-            //    //throw new Exception();
+            //    //EasyNetQs.client.Publish("heelo rabbit!" + i, "customer_ponds_reserve_id2");
+            //    CustomerPonds model = new CustomerPonds();
+            //    model.CustomerId = i;
+            //    model.MarkUserId = i;
+            //    var json = Uti.UnitHelper.Serialize(model);
+            //    EasyNetQs.SendMessage("test.wj.test", json);
+            //}
+
+            //EasyNetQs.ReceiveMessage("test.wj.test", d =>
+            //{
             //    Console.WriteLine(d);
-            //    //throw new Exception("出错!");
+            //    throw new Exception("出错!");
             //});
-            Console.WriteLine("发送Publicsh");
-            for (int i = 0; i < 2; i++)
-            {
-                CustomerPonds model = new CustomerPonds();
-                model.CustomerId = i;
-                model.MarkUserId = i;
-                model.MarkTime = DateTime.Now;
-                var json = Uti.UnitHelper.Serialize(model);
-                EasyNetQs.PublishMessage("test.wj.sub", json);
-            }
+
+            //EasyNetQs.SubscribeMessage("test.wj.sub", d =>
+            //{
+            //    Console.WriteLine(d);
+            //});
+
+            ////EasyNetQs.SubscribeMessage("test.wj.sub1", d =>
+            ////{
+            ////    //throw new Exception();
+            ////    Console.WriteLine(d);
+            ////    //throw new Exception("出错!");
+            ////});
+            //Console.WriteLine("发送Publicsh");
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    CustomerPonds model = new CustomerPonds();
+            //    model.CustomerId = i;
+            //    model.MarkUserId = i;
+            //    model.MarkTime = DateTime.Now;
+            //    var json = Uti.UnitHelper.Serialize(model);
+            //    EasyNetQs.PublishMessage("test.wj.sub", json);
+            //}
 
             //Thread.Sleep(5000);
             //for (int i = 0; i < 2; i++)

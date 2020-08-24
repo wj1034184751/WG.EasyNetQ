@@ -25,11 +25,20 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public int GetByVersion(string sql, CustomerQueue par)
+        public int GetByVersion(string sql,T par)
         {
             using (var connection = _context.DbConnection)
             {
                 var result = connection.Query<int>(sql, par);
+                return result.FirstOrDefault();
+            }
+        }
+
+        public T GetByVersion(T entity)
+        {
+            using (var connection = _context.DbConnection)
+            {
+                var result = connection.Query<T>("select * from [CustomerQueue] WHERE [Version]=@Version", entity);
                 return result.FirstOrDefault();
             }
         }
@@ -43,7 +52,6 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-
         public dynamic Execute(string sql)
         {
             using (var connection = _context.DbConnection)
@@ -53,7 +61,7 @@ namespace WG.EasyNetQ.DapperHelper
             }
         }
 
-        public dynamic Execute(string sql, CustomerQueue par)
+        public dynamic Execute(string sql, T par)
         {
             using (var connection = _context.DbConnection)
             {
