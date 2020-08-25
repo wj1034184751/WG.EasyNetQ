@@ -12,7 +12,6 @@ E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\DapperExtens
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\EasyNetQ.xml
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Newtonsoft.Json.xml
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\RabbitMQ.Client.xml
-E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.csproj.CoreCompileInputs.cache
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.csproj.CopyComplete
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.exe
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.pdb

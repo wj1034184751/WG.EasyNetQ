@@ -94,11 +94,13 @@ namespace WG.EasyNetQ
 
             IETPublisher _etBus = Services.ServiceProvider.GetRequiredService<IETPublisher>();
 
+            //发送
             for(var i=0;i<=10;i++)
             {
                 _etBus.Send("test.v1", $"测试{1}");
             }
 
+            //接收
             _etBus.Receive("test.v1", d =>
              {
                  Console.WriteLine(d);

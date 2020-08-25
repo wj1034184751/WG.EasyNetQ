@@ -54,7 +54,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                 content.ExceptionMessage.Source = info.Queue;
                 model.QueueValue = UnitHelper.Serialize(content);
 
-                var result = DapperSqlHelper.GetByVersion(new CustomerQueue() { Version = model.Version });
+                var result = this._eTRepository.GetByVersion(new CustomerQueue() { Version = model.Version });
                 if (result != null)
                 {
                     //重发次数
@@ -64,7 +64,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                     }
 
                     model.CetryCount = result.CetryCount.HasValue ? result.CetryCount + 1 : 1;
-                    DapperSqlHelper.Update(new CustomerQueue() { Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
+                    this._eTRepository.Update(new CustomerQueue() { Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
                 }
                 else
                 {
