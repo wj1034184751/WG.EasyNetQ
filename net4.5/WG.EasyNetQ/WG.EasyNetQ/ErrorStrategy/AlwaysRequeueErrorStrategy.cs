@@ -61,11 +61,11 @@ namespace WG.EasyNetQ.ErrorStrategy
                     }
 
                     model.CetryCount = result.CetryCount.HasValue ? result.CetryCount + 1 : 1;
-                    this._eTRepository.Update(new CustomerQueue() { Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
+                    this._eTRepository.Update(new CustomerQueue() {Id=model.Id, Version = model.Version, QueueName = model.QueueName, QueueValue = model.QueueValue, IsConsume = model.IsConsume, UpdateTime = model.UpdateTime, CetryCount = model.CetryCount });
                 }
                 else
                 {
-                    DapperSqlHelper.Insert(model);
+                    this._eTRepository.Insert(model);
                 }
 
                 return AckStrategies.NackWithRequeue;

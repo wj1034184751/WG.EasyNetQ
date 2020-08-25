@@ -7,6 +7,7 @@ using WG.EasyNetQ.MqEnum;
 
 namespace WG.EasyNetQ.DapperHelper
 {
+    [Serializable]
     public partial class CustomerQueue
     {
         public int Id { get; set; }
@@ -19,6 +20,7 @@ namespace WG.EasyNetQ.DapperHelper
         public Nullable<int> CetryCount { get; set; }
     }
 
+    [Serializable]
     public partial class QueueValue
     {
         public long Id { get; set; }
@@ -30,6 +32,7 @@ namespace WG.EasyNetQ.DapperHelper
         public ExceptionMessage ExceptionMessage { get; set; }
     }
 
+    [Serializable]
     public partial class ExceptionMessage
     {
         public string Source { get; set; }

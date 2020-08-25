@@ -40,7 +40,7 @@ namespace WG.EasyNetQ
                             //var config = new ConnectionConfiguration();
                             //config.Port=
                             //RabbitHutch.CreateBus()
-                            //_client = RabbitHutch.CreateBus(connStr);
+                            _client = RabbitHutch.CreateBus(connStr);
                             //注册错误重发
                             //_client = RabbitHutch.CreateBus(connStr, x => x.Register<IConsumerErrorStrategy>(d => new AlwaysRequeueErrorStrategy()));
                         }
@@ -111,7 +111,7 @@ namespace WG.EasyNetQ
                 //持久化插入数据库
                 #region
                 var version = UnitHelper.GetVersion(queue, content.Id);
-                DapperSqlHelper.UpdateState(new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
+                //DapperSqlHelper.UpdateState(new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                 #endregion
             });
         }

@@ -12,6 +12,7 @@ using WG.EasyNetQ.Test;
 using WG.EasyNetQ.DapperHelper;
 using System.Reflection;
 using WG.EasyNetQ.Extensions;
+using WG.EasyNetQ.Uti;
 
 namespace WG.EasyNetQ
 {
@@ -94,16 +95,24 @@ namespace WG.EasyNetQ
 
             IETPublisher _etBus = Services.ServiceProvider.GetRequiredService<IETPublisher>();
 
-            ////发送
-            //for(var i=0;i<=10;i++)
+            //发送
+            //for (var i = 0; i <= 10; i++)
             //{
-            //    _etBus.Send("test.v1", $"测试{1}");
+            //    CustomerPonds customer = new CustomerPonds();
+            //    customer.OperateName = i.ToString();
+            //    customer.OperateId = i;
+            //    customer.MarkTime = DateTime.Now;
+            //    customer.MarkUserId = i;
+            //    customer.CustomerId = i;
+            //    var json = UnitHelper.Serialize(customer);
+
+            //    _etBus.Send("test.v1", json);
             //}
 
             //接收
-            _etBus.Receive("customer.ponds.reserve", d =>
+            _etBus.Receive("test.v1", d =>
              {
-                 Console.WriteLine(d);
+                 Console.WriteLine("接收"+d);
                  //throw new Exception("出错!");
              });
 
@@ -120,10 +129,10 @@ namespace WG.EasyNetQ
             //    EasyNetQs.SendMessage("test.wj.test", json);
             //}
 
-            //EasyNetQs.ReceiveMessage("test.wj.test", d =>
+            //EasyNetQs.ReceiveMessage("customer.ponds.reserve", d =>
             //{
             //    Console.WriteLine(d);
-            //    throw new Exception("出错!");
+            //    //throw new Exception("出错!");
             //});
 
             //EasyNetQs.SubscribeMessage("test.wj.sub", d =>
