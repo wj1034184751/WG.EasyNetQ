@@ -18,8 +18,6 @@ namespace WG.EasyNetQ.ErrorStrategy
     {
         private readonly IETRepository<CustomerQueue> _eTRepository;
 
-        public AlwaysRequeueErrorStrategy() { }
-
         public AlwaysRequeueErrorStrategy(IETRepository<CustomerQueue> eTRepository)
         {
             this._eTRepository = eTRepository;
@@ -53,7 +51,6 @@ namespace WG.EasyNetQ.ErrorStrategy
                 content.ExceptionMessage.Message = exception.Message;
                 content.ExceptionMessage.Source = info.Queue;
                 model.QueueValue = UnitHelper.Serialize(content);
-
                 var result = this._eTRepository.GetByVersion(new CustomerQueue() { Version = model.Version });
                 if (result != null)
                 {
