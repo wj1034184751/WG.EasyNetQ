@@ -32,7 +32,7 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
 
             _configure(sqlServerOptions);
 
-            services.AddSingleton(new ETDbContext(sqlServerOptions.ConnectionString));
+            services.AddScoped(new ETDbContext(sqlServerOptions.ConnectionString));
         }
     }
 }

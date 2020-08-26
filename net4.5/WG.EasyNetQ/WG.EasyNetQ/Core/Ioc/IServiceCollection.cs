@@ -19,7 +19,7 @@ namespace WG.EasyNetQ.Core.Ioc
         IServiceCollection AddSingleton<TService, TImplementation>()
         where TService : class
         where TImplementation : class, TService;
-     
+
         IServiceCollection AddSingleton(Type serviceType, Type implementationType);
 
         IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType);
@@ -27,6 +27,8 @@ namespace WG.EasyNetQ.Core.Ioc
         IServiceCollection AddSingletonGeneric(Type serviceType);
 
         IServiceCollection AddScoped<IService, ITmplementation>();
+
+        IServiceCollection AddScoped<TService>(TService implementationInstance) where TService : class;
 
         IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func);
 

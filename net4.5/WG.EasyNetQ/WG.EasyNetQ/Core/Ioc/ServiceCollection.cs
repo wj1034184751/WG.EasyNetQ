@@ -83,6 +83,13 @@ namespace WG.EasyNetQ.Core.Ioc
             return this;
         }
 
+        public IServiceCollection AddScoped<TService>(TService implementationInstance) where TService : class
+        {
+            ListServiceDescriptor.Add(new ServiceDescriptor(implementationInstance.GetType(), typeof(TService)));
+            _builder.RegisterInstance(implementationInstance).As<TService>().InstancePerLifetimeScope();
+            return this;
+        }
+
         public IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func)
         {
             _builder.Register(func).InstancePerLifetimeScope();

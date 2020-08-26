@@ -48,7 +48,7 @@ namespace WG.EasyNetQ.ErrorStrategy
                 model.Version = UnitHelper.GetVersion(info.RoutingKey, content.Id);
                 content.Content = content.Content;
                 content.ExceptionMessage = new ExceptionMessage();
-                content.ExceptionMessage.Message = exception.Message;
+                content.ExceptionMessage.Message = exception.StackTrace.ToString();
                 content.ExceptionMessage.Source = info.Queue;
                 model.QueueValue = UnitHelper.Serialize(content);
                 var result = this._eTRepository.GetByVersion(new CustomerQueue() { Version = model.Version });
