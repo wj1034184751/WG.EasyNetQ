@@ -96,18 +96,22 @@ namespace WG.EasyNetQ
             IETPublisher _etBus = Services.ServiceProvider.GetRequiredService<IETPublisher>();
 
             //发送
-            //for (var i = 0; i <= 10; i++)
-            //{
-            //    CustomerPonds customer = new CustomerPonds();
-            //    customer.OperateName = i.ToString();
-            //    customer.OperateId = i;
-            //    customer.MarkTime = DateTime.Now;
-            //    customer.MarkUserId = i;
-            //    customer.CustomerId = i;
-            //    var json = UnitHelper.Serialize(customer);
+            for (var i = 0; i <= 10; i++)
+            {
+                CustomerPonds customer = new CustomerPonds();
+                customer.OperateName = i.ToString();
+                customer.OperateId = i;
+                customer.MarkTime = DateTime.Now;
+                customer.MarkUserId = i;
+                customer.CustomerId = i;
+                var json = UnitHelper.Serialize(customer);
 
-            //    _etBus.Send("test.v1", json);
-            //}
+                Task t1 = new Task(() =>
+                  {
+                      _etBus.Send("test.v1", json);
+                  });
+                t1.Start();
+            }
 
             //接收
             _etBus.Receive("test.v1", d =>
