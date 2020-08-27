@@ -19,3 +19,4 @@ E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.dll
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.pdb
 E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\bin\Debug\Autofac.xml
+E:\Work\MyCode\WG.EasyNetQ\net4.5\WG.EasyNetQ\WG.EasyNetQ\obj\Debug\WG.EasyNetQ.csproj.CoreCompileInputs.cache
