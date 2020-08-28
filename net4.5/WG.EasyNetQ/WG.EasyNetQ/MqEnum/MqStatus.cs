@@ -13,6 +13,8 @@ namespace WG.EasyNetQ.MqEnum
         //成功
         Succeeded = 1,
         //失败
-        Failed = -1
+        Failed = -1,
+
+        Deleted = -2
     }
 }

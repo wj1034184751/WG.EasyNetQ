@@ -57,7 +57,7 @@ namespace WG.EasyNetQ.Core.Ioc
             return this;
         }
 
-        public IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType)
+        public IServiceCollection AddScopeGeneric(Type serviceType, Type implementationType)
         {
             ListServiceDescriptor.Add(new ServiceDescriptor(implementationType, serviceType));
             _builder.RegisterAssemblyTypes(serviceType.GetTypeInfo().Assembly)
@@ -67,7 +67,7 @@ namespace WG.EasyNetQ.Core.Ioc
             return this;
         }
 
-        public IServiceCollection AddSingletonGeneric(Type serviceType)
+        public IServiceCollection AddScopeGeneric(Type serviceType)
         {
             foreach(var item in serviceType.GetTypeInfo().Assembly.GetTypes().Where(t=>t.IsGenericType&&!t.IsInterface))
             {
@@ -87,12 +87,6 @@ namespace WG.EasyNetQ.Core.Ioc
         {
             ListServiceDescriptor.Add(new ServiceDescriptor(implementationInstance.GetType(), typeof(TService)));
             _builder.RegisterInstance(implementationInstance).As<TService>().SingleInstance();
-            return this;
-        }
-
-        public IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func)
-        {
-            _builder.Register(func).InstancePerLifetimeScope();
             return this;
         }
 

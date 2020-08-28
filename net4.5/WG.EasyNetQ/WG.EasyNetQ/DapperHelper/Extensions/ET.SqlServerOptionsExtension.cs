@@ -21,7 +21,7 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
 
         public void AddServices(IServiceCollection services)
         {
-            services.AddSingletonGeneric(typeof(Repository<,>));
+            services.AddScopeGeneric(typeof(Repository<,>));
             services.AddScoped<IETPublisher, ETPublisher>();
             AddSqlServerOptions(services);
         }
@@ -31,8 +31,8 @@ namespace WG.EasyNetQ.DapperHelper.Extensions
             var sqlServerOptions = new SqlServerOptions();
 
             _configure(sqlServerOptions);
-
             services.AddScoped(new ETDbContext(sqlServerOptions.ConnectionString));
+            //services.AddScoped<IETDbContext>(new ETDbContext(sqlServerOptions.ConnectionString));
         }
     }
 }

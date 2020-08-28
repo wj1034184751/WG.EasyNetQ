@@ -23,5 +23,7 @@ namespace WG.EasyNetQ.ETCore
         void Subscribe<T>(string name, Action<T> act);
 
         void Subscribe(string name, Action<string> act);
+
+        void ConsumerCancel(string name, Action<string> act);
     }
 }

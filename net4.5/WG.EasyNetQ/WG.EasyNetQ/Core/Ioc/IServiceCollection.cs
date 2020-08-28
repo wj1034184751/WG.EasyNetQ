@@ -22,15 +22,13 @@ namespace WG.EasyNetQ.Core.Ioc
 
         IServiceCollection AddSingleton(Type serviceType, Type implementationType);
 
-        IServiceCollection AddSingletonGeneric(Type serviceType, Type implementationType);
+        IServiceCollection AddScopeGeneric(Type serviceType, Type implementationType);
 
-        IServiceCollection AddSingletonGeneric(Type serviceType);
+        IServiceCollection AddScopeGeneric(Type serviceType);
 
         IServiceCollection AddScoped<IService, ITmplementation>();
 
         IServiceCollection AddScoped<TService>(TService implementationInstance) where TService : class;
-
-        IServiceCollection AddScoped<IService>(Func<IComponentContext, string> func);
 
         void BeginRegister();
     }

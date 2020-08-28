@@ -128,9 +128,9 @@ namespace WG.EasyNetQ.ETCore
 
         public void Subscribe<T>(string name, Action<T> act)
         {
-            this._rabbitMQClient.Client.Subscribe<CustomerQueue>(name, noMessage => Task.Factory.StartNew(() =>
+            this._rabbitMQClient.Client.Subscribe<CustomerQueue>(name, onMessage => Task.Factory.StartNew(() =>
             {
-                var model = noMessage;
+                var model = onMessage;
                 var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
                 act.Invoke(UnitHelper.DeserializeObject<T>(content.Content));
             }).ContinueWith(task =>
@@ -139,7 +139,7 @@ namespace WG.EasyNetQ.ETCore
                 {
                     //持久化插入数据库
                     #region
-                    var model = noMessage;
+                    var model = onMessage;
                     var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
                     var version = UnitHelper.GetVersion(name, content.Id);
                     this._eTRepository.UpdateState(new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
@@ -150,9 +150,9 @@ namespace WG.EasyNetQ.ETCore
 
         public void Subscribe(string name, Action<string> act)
         {
-            this._rabbitMQClient.Client.Subscribe<CustomerQueue>(name, noMessage => Task.Factory.StartNew(() =>
+            this._rabbitMQClient.Client.Subscribe<CustomerQueue>(name, onMessage => Task.Factory.StartNew(() =>
             {
-                var model = noMessage;
+                var model = onMessage;
                 var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
                 act.Invoke(content.Content);
             }).ContinueWith(task =>
@@ -161,13 +161,26 @@ namespace WG.EasyNetQ.ETCore
                 {
                     //持久化插入数据库
                     #region
-                    var model = noMessage;
+                    var model = onMessage;
                     var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
                     var version = UnitHelper.GetVersion(name, content.Id);
                     this._eTRepository.UpdateState(new CustomerQueue { IsConsume = (int)MqStatus.Succeeded, Version = version });
                     #endregion
                 }
             }));
+        }
+
+        public void ConsumerCancel(string name, Action<string> act)
+        {
+            var subscriptionResult = _rabbitMQClient.Client.Subscribe<CustomerQueue>(name, onMessage =>
+            {
+                var model = onMessage;
+                var content = UnitHelper.DeserializeObject<QueueValue>(model.QueueValue);
+                var version = UnitHelper.GetVersion(name, content.Id);
+                this._eTRepository.UpdateState(new CustomerQueue { IsConsume = (int)MqStatus.Deleted, Version = version });
+            });
+
+            subscriptionResult.Dispose();
         }
     }
 }
