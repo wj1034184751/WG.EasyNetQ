@@ -20,6 +20,7 @@ namespace WG.EasyNetQ
     {
         static void Main(string[] args)
         {
+            //分支的内容提交自20200609H
             //修改
             //SqlConnectionTest.Test();
             //var builder = new ContainerBuilder();
