@@ -20,6 +20,7 @@ namespace WG.EasyNetQ
     {
         static void Main(string[] args)
         {
+            //修改
             //SqlConnectionTest.Test();
             //var builder = new ContainerBuilder();
             //builder.Register(d => new ETDbContext("Server=115.236.37.105,90;Database=Jiepei_Pcb;User Id=WKSite_Main;Password=WKSite_Main123456!@#;Connect Timeout=300")).InstancePerLifetimeScope();
